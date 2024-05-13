@@ -1,6 +1,7 @@
 package jp.izumarth.codeapp.model
 
 import androidx.compose.runtime.Immutable
+import kotlin.math.floor
 
 @Immutable
 sealed class MusicElement {
@@ -15,6 +16,21 @@ sealed class MusicElement {
 
         fun flat(): Note {
             return Note(note - 0.5f)
+        }
+
+        fun getName(): String {
+            val noteValue = note.mod(7.0f)
+
+            return when (val degreeFromC = floor(noteValue).toInt()) {
+                0 -> "B"
+                1 -> "C"
+                2 -> "D"
+                3 -> "E"
+                4 -> "F"
+                5 -> "G"
+                6 -> "A"
+                else -> throw IllegalArgumentException("Invalid degreeFromC value: $degreeFromC")
+            }
         }
 
         companion object {
