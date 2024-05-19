@@ -60,6 +60,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.accompanist.inset)
+    implementation(libs.gson)
     api(libs.dagger.hilt)
     kapt(libs.dagger.hilt.compiler)
     api(libs.androidx.hilt)
