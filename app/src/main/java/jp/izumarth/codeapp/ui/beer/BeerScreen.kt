@@ -1,23 +1,22 @@
 package jp.izumarth.codeapp.ui.beer
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,9 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import jp.izumarth.codeapp.R
-
-val AppBarCollapsedHeight = 56.dp
-val AppBarExpendedHeight = 400.dp
+import jp.izumarth.codeapp.model.Beer
 
 @Composable
 fun BeerScreen(
@@ -58,8 +55,6 @@ fun BeerScreen(
 fun BeerContent(
     uiState: BeerUiState
 ) {
-    val scrollState = rememberLazyListState()
-
     when (uiState) {
         is BeerUiState.Loading ->
             CircularProgressIndicator()
@@ -70,14 +65,16 @@ fun BeerContent(
 
         is BeerUiState.Loaded ->
             Column {
-                BeerBody(scrollState)
+                BeerBody(
+                    beerItem = uiState.beerItem,
+                )
             }
     }
 }
 
 @Composable
 fun BeerTop(
-    scrollState: LazyListState,
+    beerItem: Beer,
 ) {
     val Transparent = Color(0x00FFFFFF)
     val White = Color(0xFFFFFFFF)
@@ -95,7 +92,7 @@ fun BeerTop(
     ) {
         Box(
             Modifier
-                .height(AppBarExpendedHeight)
+                .height(400.dp)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.duvel),
@@ -124,7 +121,7 @@ fun BeerTop(
                 verticalAlignment = Alignment.Bottom
             ) {
                 Text(
-                    "Belgian Ale",
+                    beerItem.beerStyle,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier
                         .clip(Shapes.small)
@@ -137,11 +134,12 @@ fun BeerTop(
         Column(
             Modifier
                 .fillMaxWidth()
-                .height(AppBarCollapsedHeight),
-            verticalArrangement = Arrangement.Center
+                .padding(horizontal = 16.dp)
+                .height(56.dp),
+            verticalArrangement = Arrangement.Center,
         ) {
             Text(
-                "duvel",
+                beerItem.name,
                 fontSize = 26.sp,
                 fontWeight = FontWeight.Bold,
             )
@@ -150,54 +148,127 @@ fun BeerTop(
 }
 
 @Composable
-fun BeerBody(scrollState: LazyListState) {
-    LazyColumn(
-        state = scrollState
+fun BeerBody(
+    beerItem: Beer,
+) {
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState()),
     ) {
-        item {
-            BeerTop(scrollState)
-            BasicInfo()
-            Description()
-            Description()
-        }
+            BeerTop(
+                beerItem = beerItem,
+            )
+            BasicInfo(
+                beerItem = beerItem,
+            )
+            Description(
+                beerItem = beerItem,
+            )
+            OtherInformation(
+                beerItem = beerItem,
+            )
+            Spacer(modifier = Modifier.height(64.dp))
     }
 }
 
 @Composable
-fun BasicInfo() {
+fun BasicInfo(
+    beerItem: Beer,
+) {
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 16.dp)
     ) {
-        InfoColumn(R.drawable.sports_bar, "8.5%")
-        InfoColumn(R.drawable.style, "330ml")
-        InfoColumn(R.drawable.map, "Belgium")
+        InfoColumn("Alcohol", "${beerItem.alcohol}%")
+        InfoColumn("Volume", "${beerItem.volume}ml")
+        InfoColumn("Country", beerItem.country)
     }
 }
 
 @Composable
-fun InfoColumn(@DrawableRes iconResource: Int, text: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(
-            painter = painterResource(id = iconResource),
-            contentDescription = null,
-            tint = Color.Blue,
-            modifier = Modifier.height(48.dp)
-        )
+fun InfoColumn(
+    title: String,
+    text: String
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = title, color = Color.Gray)
         Text(text = text, fontWeight = FontWeight.Bold)
     }
 }
 
 @Composable
-fun Description() {
+fun Description(
+    beerItem: Beer,
+) {
     Text(
-        text = "独自の酵母と長い熟成期間、瓶内2次発酵を駆使した、 1918年から続くオリジナルのレシピ。\n" +
-                "繊細な香りと絶妙な苦みを備えたゴールデン・エールは、 あまりの魅力から「悪魔」と名付けられた。\n" +
-                "厄介なのは、その誘惑から逃れるのはひどく困難ということ。 もちろん試してみるのは自由だがー。",
+        text = beerItem.description,
         fontWeight = FontWeight.Medium,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
     )
 }
 
+@Composable
+fun OtherInformation(
+    beerItem: Beer,
+) {
+    Text(
+        text = "その他情報",
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Blue)
+            .padding(horizontal = 8.dp),
+        color = Color.White,
+        fontWeight = FontWeight.Bold,
+    )
+
+    val displayInformation = listOf(
+        "原材料" to beerItem.materials.joinToString("\n"),
+        "ホップ" to beerItem.hop.joinToString("\n"),
+    )
+
+    displayInformation.forEach { (title, information) ->
+        OtherInformationItem(title, information)
+        OtherInformationDivider()
+    }
+}
+
+@Composable
+fun OtherInformationItem(
+    title: String,
+    information: String,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = title,
+            modifier = Modifier
+                .weight(0.2f)
+                .padding(8.dp),
+            fontWeight = FontWeight.Bold,
+        )
+
+        Text(
+            text = information,
+            modifier = Modifier
+                .weight(0.8f)
+                .padding(8.dp),
+        )
+    }
+}
+
+@Composable
+private fun OtherInformationDivider(
+) {
+Divider(
+    modifier = Modifier
+        .fillMaxWidth()
+        .padding(start = 8.dp)
+)
+}

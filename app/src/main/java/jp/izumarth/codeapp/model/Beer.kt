@@ -9,4 +9,7 @@ data class Beer(
     val alcohol: Double,
     val volume: Int,
     val country: String,
+    val hop: List<String>,
+    val materials: List<String>,
+    val description: String,
 )
