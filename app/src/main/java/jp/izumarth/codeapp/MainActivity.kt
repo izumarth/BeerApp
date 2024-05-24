@@ -16,7 +16,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
-import jp.izumarth.codeapp.ui.beer.BeerScreen
+import jp.izumarth.codeapp.ui.beerList.BeerListScreen
 import jp.izumarth.codeapp.ui.theme.CodeAppTheme
 
 @AndroidEntryPoint
@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
                     Surface(
                         modifier = Modifier.padding(it)
                     ) {
-                        BeerScreen()
+                        BeerListScreen()
                     }
                 }
                 // A surface container using the 'background' color from the them

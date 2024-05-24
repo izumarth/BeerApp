@@ -1,4 +1,4 @@
-package jp.izumarth.codeapp.ui.beer
+package jp.izumarth.codeapp.ui.beerList
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,19 +11,16 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BeerViewModel @Inject constructor(
+class BeerListViewModel @Inject constructor(
     private val beerRepository: BeerRepository
 ) : ViewModel() {
 
-    var state: BeerUiState by mutableStateOf(BeerUiState.Loading)
-
-    fun onLaunch(
-        beerName: String,
-    ) {
+    var state: BeerListUiState by mutableStateOf(BeerListUiState.Loading)
+    fun onLaunch() {
         viewModelScope.launch {
-            beerRepository.getBeerItem(beerName)?.let {
-                state = BeerUiState.Loaded(
-                    beerItem = it
+            beerRepository.getBeers().let {
+                state = BeerListUiState.Loaded(
+                    beers = it
                 )
             }
         }

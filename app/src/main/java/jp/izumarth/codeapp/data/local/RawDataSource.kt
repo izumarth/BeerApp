@@ -22,9 +22,11 @@ class RawDataSource @Inject constructor(
         withContext(Dispatchers.IO) {
             getJson(RawDataKey.BeerItem)
         }
+
     private suspend inline fun <reified T> getJson(key: RawDataKey): T =
         readFile(key)
             .let { gson.fromJson(it, object : TypeToken<T>() {}.type) }
+
     private fun readFile(key: RawDataKey): String =
         context.resources
             .openRawResource(key.resId)

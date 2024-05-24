@@ -15,10 +15,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -28,22 +35,27 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import jp.izumarth.codeapp.R
+import jp.izumarth.codeapp.activity.BeerActivity
 import jp.izumarth.codeapp.model.Beer
 
 @Composable
 fun BeerScreen(
+    beerName: String,
     viewModel: BeerViewModel = hiltViewModel()
 ) {
     val uiState = viewModel.state
 
     LaunchedEffect(Unit) {
-        viewModel.onLaunch()
+        viewModel.onLaunch(
+            beerName = beerName
+        )
     }
 
     BeerContent(
@@ -64,11 +76,9 @@ fun BeerContent(
             CircularProgressIndicator()
 
         is BeerUiState.Loaded ->
-            Column {
                 BeerBody(
                     beerItem = uiState.beerItem,
                 )
-            }
     }
 }
 
@@ -147,14 +157,33 @@ fun BeerTop(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BeerBody(
     beerItem: Beer,
 ) {
-    Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState()),
+    val activity = LocalContext.current as BeerActivity
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = { activity.finish() }) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                        )
+                    }
+                },
+                title = { Text(beerItem.name) },
+            )
+        }
     ) {
+        Column(
+            modifier = Modifier
+                .padding(it)
+                .verticalScroll(rememberScrollState()),
+        ) {
             BeerTop(
                 beerItem = beerItem,
             )
@@ -168,6 +197,7 @@ fun BeerBody(
                 beerItem = beerItem,
             )
             Spacer(modifier = Modifier.height(64.dp))
+        }
     }
 }
 
