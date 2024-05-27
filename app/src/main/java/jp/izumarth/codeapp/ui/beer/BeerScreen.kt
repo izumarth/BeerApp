@@ -22,8 +22,8 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -41,9 +40,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import jp.izumarth.codeapp.R
 import jp.izumarth.codeapp.activity.BeerActivity
 import jp.izumarth.codeapp.model.Beer
+import jp.izumarth.codeapp.utils.getDrawableId
 
 @Composable
 fun BeerScreen(
@@ -76,9 +75,9 @@ fun BeerContent(
             CircularProgressIndicator()
 
         is BeerUiState.Loaded ->
-                BeerBody(
-                    beerItem = uiState.beerItem,
-                )
+            BeerBody(
+                beerItem = uiState.beerItem,
+            )
     }
 }
 
@@ -86,15 +85,7 @@ fun BeerContent(
 fun BeerTop(
     beerItem: Beer,
 ) {
-    val Transparent = Color(0x00FFFFFF)
-    val White = Color(0xFFFFFFFF)
-
-
-    val Shapes = Shapes(
-        small = RoundedCornerShape(12.dp),
-        medium = RoundedCornerShape(20.dp),
-        large = RoundedCornerShape(24.dp)
-    )
+    val drawableId = getDrawableId(imageName = beerItem.imageName)
 
     Column(
         modifier = Modifier
@@ -105,7 +96,7 @@ fun BeerTop(
                 .height(400.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.duvel),
+                painter = painterResource(id = drawableId),
                 contentDescription = null,
                 contentScale = ContentScale.FillHeight,
                 modifier = Modifier.fillMaxSize()
@@ -117,8 +108,8 @@ fun BeerTop(
                     .background(
                         Brush.verticalGradient(
                             colorStops = arrayOf(
-                                Pair(0.4f, Transparent),
-                                Pair(1f, White)
+                                Pair(0.4f, Color(0x00FFFFFF)),
+                                Pair(1f, Color(0xFFFFFFFF))
                             )
                         )
                     )
@@ -134,8 +125,8 @@ fun BeerTop(
                     beerItem.beerStyle,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier
-                        .clip(Shapes.small)
-                        .background(LightGray)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f))
                         .padding(vertical = 6.dp, horizontal = 16.dp)
                 )
             }
@@ -205,29 +196,53 @@ fun BeerBody(
 fun BasicInfo(
     beerItem: Beer,
 ) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp)
+    Column(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        InfoColumn("Alcohol", "${beerItem.alcohol}%")
-        InfoColumn("Volume", "${beerItem.volume}ml")
-        InfoColumn("Country", beerItem.country)
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        ) {
+            InfoColumn("Alcohol", "${beerItem.alcohol}%")
+            InfoColumn("Volume", "${beerItem.volume}ml")
+            InfoColumn("Country", beerItem.country)
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        ) {
+            InfoColumn("IBU", beerItem.ibu?.toString())
+            InfoColumn("EBC", beerItem.ebc?.toString())
+        }
     }
 }
 
 @Composable
 fun InfoColumn(
     title: String,
-    text: String
+    text: String?,
 ) {
+    val label = text ?: "-"
+
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = title, color = Color.Gray)
-        Text(text = text, fontWeight = FontWeight.Bold)
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+
+        Text(
+            text = label,
+            fontWeight = FontWeight.Bold,
+        )
     }
 }
 
@@ -237,7 +252,7 @@ fun Description(
 ) {
     Text(
         text = beerItem.description,
-        fontWeight = FontWeight.Medium,
+        style = MaterialTheme.typography.labelLarge,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
     )
 }
@@ -246,20 +261,12 @@ fun Description(
 fun OtherInformation(
     beerItem: Beer,
 ) {
-    Text(
-        text = "その他情報",
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.Blue)
-            .padding(horizontal = 8.dp),
-        color = Color.White,
-        fontWeight = FontWeight.Bold,
-    )
-
     val displayInformation = listOf(
         "原材料" to beerItem.materials.joinToString("\n"),
         "ホップ" to beerItem.hop.joinToString("\n"),
     )
+
+    OtherInformationDivider()
 
     displayInformation.forEach { (title, information) ->
         OtherInformationItem(title, information)
@@ -281,7 +288,7 @@ fun OtherInformationItem(
             modifier = Modifier
                 .weight(0.2f)
                 .padding(8.dp),
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.labelMedium,
         )
 
         Text(
@@ -289,6 +296,7 @@ fun OtherInformationItem(
             modifier = Modifier
                 .weight(0.8f)
                 .padding(8.dp),
+            style = MaterialTheme.typography.bodyMedium,
         )
     }
 }
@@ -296,9 +304,14 @@ fun OtherInformationItem(
 @Composable
 private fun OtherInformationDivider(
 ) {
-Divider(
-    modifier = Modifier
-        .fillMaxWidth()
-        .padding(start = 8.dp)
-)
+    Divider(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 8.dp)
+            .padding(vertical = 1.dp),
+        thickness = (0.5).dp,
+        color = MaterialTheme.colorScheme.secondary.copy(
+            alpha = 0.5f,
+        ),
+    )
 }

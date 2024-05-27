@@ -17,7 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
 import jp.izumarth.codeapp.ui.beerList.BeerListScreen
-import jp.izumarth.codeapp.ui.theme.CodeAppTheme
+import jp.izumarth.codeapp.ui.theme.BeerTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CodeAppTheme {
+            BeerTheme {
                 Scaffold(
                     topBar = {
                         CenterAlignedTopAppBar(

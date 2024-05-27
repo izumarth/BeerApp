@@ -9,7 +9,7 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.os.bundleOf
 import dagger.hilt.android.AndroidEntryPoint
 import jp.izumarth.codeapp.ui.beer.BeerScreen
-import jp.izumarth.codeapp.ui.theme.CodeAppTheme
+import jp.izumarth.codeapp.ui.theme.BeerTheme
 
 @AndroidEntryPoint
 class BeerActivity : ComponentActivity() {
@@ -22,7 +22,7 @@ class BeerActivity : ComponentActivity() {
             ?: return finish()
 
         setContent {
-            CodeAppTheme {
+            BeerTheme {
                 BeerScreen(
                     beerName = extras.beerName,
                 )
