@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,11 +13,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,6 +45,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import jp.izumarth.codeapp.activity.BeerActivity
 import jp.izumarth.codeapp.model.Beer
 import jp.izumarth.codeapp.utils.getDrawableId
@@ -75,9 +83,95 @@ fun BeerContent(
             CircularProgressIndicator()
 
         is BeerUiState.Loaded ->
-            BeerBody(
+            LoadedScreen(
+                uiState = uiState,
+            )
+    }
+}
+
+@Composable
+fun LoadedScreen(
+    uiState: BeerUiState.Loaded,
+) {
+    val navController = rememberNavController()
+
+    NavHost(
+        navController = navController,
+        startDestination = BeerRoute.Detail.destinaton,
+    ) {
+        composable(BeerRoute.Detail.destinaton) {
+            BeerDetailContent(
+                beerItem = uiState.beerItem,
+                onReviewClick = {
+                    navController.navigate(BeerRoute.Review.destinaton)
+                }
+            )
+        }
+
+        composable(BeerRoute.Review.destinaton) {
+            ReviewScreen(
                 beerItem = uiState.beerItem,
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BeerDetailContent(
+    beerItem: Beer,
+    onReviewClick: () -> Unit,
+) {
+    val activity = LocalContext.current as BeerActivity
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = { activity.finish() }) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                        )
+                    }
+                },
+                title = { Text(beerItem.name) },
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(it)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            BeerTop(
+                beerItem = beerItem,
+            )
+            BasicInfo(
+                beerItem = beerItem,
+            )
+            Description(
+                beerItem = beerItem,
+            )
+            OtherInformation(
+                beerItem = beerItem,
+            )
+            Spacer(modifier = Modifier.height(64.dp))
+
+            // Navigateテスト用仮コード
+            Button(
+                onClick = onReviewClick,
+                contentPadding = PaddingValues(12.dp)
+            ) {
+                // Inner content including an icon and a text label
+                Icon(
+                    Icons.Filled.Edit,
+                    contentDescription = "Review",
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                )
+                Text("Review")
+            }
+        }
     }
 }
 
@@ -144,50 +238,6 @@ fun BeerTop(
                 fontSize = 26.sp,
                 fontWeight = FontWeight.Bold,
             )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BeerBody(
-    beerItem: Beer,
-) {
-    val activity = LocalContext.current as BeerActivity
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                navigationIcon = {
-                    IconButton(onClick = { activity.finish() }) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = null,
-                        )
-                    }
-                },
-                title = { Text(beerItem.name) },
-            )
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(it)
-                .verticalScroll(rememberScrollState()),
-        ) {
-            BeerTop(
-                beerItem = beerItem,
-            )
-            BasicInfo(
-                beerItem = beerItem,
-            )
-            Description(
-                beerItem = beerItem,
-            )
-            OtherInformation(
-                beerItem = beerItem,
-            )
-            Spacer(modifier = Modifier.height(64.dp))
         }
     }
 }
