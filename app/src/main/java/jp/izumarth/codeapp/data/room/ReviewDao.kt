@@ -5,13 +5,12 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import jp.izumarth.codeapp.model.Review
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ReviewDao {
 
     @Query("SELECT * FROM review WHERE name = :name")
-    fun getReview(name: String): Flow<Review>
+    suspend fun getReview(name: String): Review
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun replace(review: Review)
