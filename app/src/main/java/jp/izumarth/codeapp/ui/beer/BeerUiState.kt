@@ -2,6 +2,7 @@ package jp.izumarth.codeapp.ui.beer
 
 import androidx.compose.runtime.Immutable
 import jp.izumarth.codeapp.model.Beer
+import jp.izumarth.codeapp.model.Review
 
 @Immutable
 sealed class BeerUiState {
@@ -13,6 +14,7 @@ sealed class BeerUiState {
 
     @Immutable
     data class Loaded(
-        val beerItem: Beer
+        val beerItem: Beer,
+        val review: Review?,
     ) : BeerUiState()
 }
