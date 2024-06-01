@@ -4,13 +4,13 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 enum class BeerRoute(
-    val destinaton: String,
+    val destination: String,
 ) {
     Detail(
-        destinaton = "detail",
+        destination = "detail",
     ),
 
     Review(
-        destinaton = "review",
+        destination = "review",
     ),
 }
