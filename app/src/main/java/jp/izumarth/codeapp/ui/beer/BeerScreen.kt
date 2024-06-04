@@ -56,6 +56,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import jp.izumarth.codeapp.activity.BeerActivity
 import jp.izumarth.codeapp.model.Beer
+import jp.izumarth.codeapp.ui.review.ReviewScreen
 import jp.izumarth.codeapp.utils.getDrawableId
 
 @Composable
@@ -78,7 +79,7 @@ fun BeerScreen(
 
 @Composable
 fun BeerContent(
-    uiState: BeerUiState
+    uiState: BeerUiState,
 ) {
     when (uiState) {
         is BeerUiState.Loading ->
@@ -135,28 +136,28 @@ fun LoadedScreen(
     ) {
         NavHost(
             navController = navController,
-            startDestination = BeerRoute.Detail.destinaton,
+            startDestination = BeerRoute.Detail.destination,
             modifier = Modifier.padding(it),
         ) {
-            composable(BeerRoute.Detail.destinaton) {
+            composable(BeerRoute.Detail.destination) {
                 BeerDetailContent(
                     beerItem = uiState.beerItem,
                     onReviewClick = {
-                        navController.navigate(BeerRoute.Review.destinaton)
+                        navController.navigate(BeerRoute.Review.destination)
                     }
                 )
             }
 
-            composable(BeerRoute.Review.destinaton) {
+            composable(BeerRoute.Review.destination) {
                 ReviewScreen(
                     beerItem = uiState.beerItem,
+                    review = uiState.review,
                 )
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BeerDetailContent(
     beerItem: Beer,

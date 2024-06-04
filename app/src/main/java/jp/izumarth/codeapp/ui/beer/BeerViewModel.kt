@@ -8,6 +8,7 @@ import jp.izumarth.codeapp.data.repository.ReviewRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -23,10 +24,12 @@ class BeerViewModel @Inject constructor(
     private val _beerFlow = _beerNameFlow
         .filterNotNull()
         .map { beerRepository.getBeerItem(it) }
+        .distinctUntilChanged()
 
     private val _reviewFlow = _beerNameFlow
         .filterNotNull()
         .map { reviewRepository.getReview(it) }
+        .distinctUntilChanged()
 
     val uiStateFlow = combine(
         _beerFlow,

@@ -8,7 +8,7 @@ import jp.izumarth.codeapp.model.Review
     entities = [
         Review::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = false,
 )
 abstract class Database : RoomDatabase() {
