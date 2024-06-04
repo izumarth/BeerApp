@@ -39,11 +39,11 @@ class ReviewViewModel @Inject constructor(
         }
     }
 
-    fun onAddReview(
-        review: Review,
-    ) {
+    fun onAddReview() {
         viewModelScope.launch {
-            reviewRepository.replace(review)
+            reviewState?.let {
+                reviewRepository.replace(it)
+            }
         }
     }
 

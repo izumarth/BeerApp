@@ -2,16 +2,26 @@ package jp.izumarth.codeapp.ui.review
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import jp.izumarth.codeapp.activity.BeerActivity
 import jp.izumarth.codeapp.model.Beer
 import jp.izumarth.codeapp.model.Review
 
@@ -22,6 +32,7 @@ fun ReviewScreen(
     viewModel: ReviewViewModel = hiltViewModel()
 ) {
     val reviewState = viewModel.reviewState
+    val activity = LocalContext.current as BeerActivity
 
     LaunchedEffect(Unit) {
         viewModel.onLaunch(
@@ -34,7 +45,11 @@ fun ReviewScreen(
         review = reviewState,
         onChangeReview = { value, reviewItem ->
             viewModel.onChangeReview(value, reviewItem)
-        }
+        },
+        onAddReview = {
+            viewModel.onAddReview()
+            activity.finish()
+        },
     )
 }
 
@@ -42,11 +57,13 @@ fun ReviewScreen(
 private fun ReviewContent(
     review: Review?,
     onChangeReview: (Int, ReviewViewModel.ReviewItem) -> Unit,
+    onAddReview: () -> Unit,
 ) {
     review?.let {
         ReviewLoaded(
             review = review,
             onChangeReview = onChangeReview,
+            onAddReview = onAddReview,
         )
     } ?: CircularProgressIndicator()
 }
@@ -55,6 +72,7 @@ private fun ReviewContent(
 private fun ReviewLoaded(
     review: Review,
     onChangeReview: (Int, ReviewViewModel.ReviewItem) -> Unit,
+    onAddReview: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -77,6 +95,24 @@ private fun ReviewLoaded(
                 onChangeReview(it.toInt(), ReviewViewModel.ReviewItem.Sweetness)
             },
         )
+
+        Button(
+            onClick = onAddReview,
+            contentPadding = PaddingValues(
+                start = 20.dp,
+                top = 12.dp,
+                end = 20.dp,
+                bottom = 12.dp
+            )
+        ) {
+            Icon(
+                Icons.Filled.Edit,
+                contentDescription = "edit",
+                modifier = Modifier.size(ButtonDefaults.IconSize),
+            )
+            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+            Text("edit")
+        }
     }
 }
 
