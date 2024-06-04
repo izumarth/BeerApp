@@ -38,7 +38,7 @@ fun BeerListScreen(
 ) {
     val uiState = viewModel.state
 
-    val beerLaucher = rememberLauncherForActivityResult(
+    val beerLauncher = rememberLauncherForActivityResult(
         BeerActivity.Launcher()
     ) {}
 
@@ -49,7 +49,7 @@ fun BeerListScreen(
     BeerListContent(
         uiState = uiState,
         onDetail = { beerName ->
-            beerLaucher.launch(
+            beerLauncher.launch(
                 BeerActivity.Extras(
                     beerName = beerName,
                 )

@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.accompanist.inset)
     implementation(libs.gson)
+    implementation(libs.lottie)
     api(libs.dagger.hilt)
     kapt(libs.dagger.hilt.compiler)
     api(libs.androidx.hilt)
