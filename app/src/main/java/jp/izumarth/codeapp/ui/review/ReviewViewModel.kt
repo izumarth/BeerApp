@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jp.izumarth.codeapp.data.repository.ReviewRepository
 import jp.izumarth.codeapp.model.Beer
 import jp.izumarth.codeapp.model.Review
+import jp.izumarth.codeapp.model.ReviewSelectValue
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,12 +30,42 @@ class ReviewViewModel @Inject constructor(
 
     fun onChangeReview(
         value: Int,
-        reviewItem: ReviewItem,
+        reviewItem: ReviewSelectValue,
     ) {
         viewModelScope.launch {
             reviewState = when (reviewItem) {
-                ReviewItem.Bitterness -> reviewState?.copy(bitterness = value)
-                ReviewItem.Sweetness -> reviewState?.copy(sweetness = value)
+                ReviewSelectValue.Color
+                    -> reviewState?.copy(color = value)
+
+                ReviewSelectValue.Transparency
+                    -> reviewState?.copy(transparency = value)
+
+                ReviewSelectValue.Carbonation
+                    -> reviewState?.copy(carbonation = value)
+
+                ReviewSelectValue.HopsFlavor
+                    -> reviewState?.copy(hopsFlavor = value)
+
+                ReviewSelectValue.MaltFlavor
+                    -> reviewState?.copy(maltFlavor = value)
+
+                ReviewSelectValue.EsterFlavor
+                    -> reviewState?.copy(esterFlavor = value)
+
+                ReviewSelectValue.Bitterness
+                    -> reviewState?.copy(bitterness = value)
+
+                ReviewSelectValue.Sweetness
+                    -> reviewState?.copy(sweetness = value)
+
+                ReviewSelectValue.Body
+                    -> reviewState?.copy(body = value)
+
+                ReviewSelectValue.AfterTaste
+                    -> reviewState?.copy(afterTaste = value)
+
+                ReviewSelectValue.TotalRate
+                    -> reviewState?.copy(totalRate = value)
             }
         }
     }
@@ -45,10 +76,5 @@ class ReviewViewModel @Inject constructor(
                 reviewRepository.replace(it)
             }
         }
-    }
-
-    enum class ReviewItem {
-        Bitterness,
-        Sweetness,
     }
 }
