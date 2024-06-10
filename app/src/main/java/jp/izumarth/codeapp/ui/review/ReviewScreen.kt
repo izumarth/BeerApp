@@ -1,23 +1,21 @@
 package jp.izumarth.codeapp.ui.review
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -48,12 +46,14 @@ import jp.izumarth.codeapp.ui.widgets.InfoDialog
 fun ReviewScreen(
     beerItem: Beer,
     review: Review?,
+    onLaunch: () -> Unit,
     viewModel: ReviewViewModel = hiltViewModel()
 ) {
     val reviewState = viewModel.reviewState
     val activity = LocalContext.current as BeerActivity
 
     LaunchedEffect(Unit) {
+        onLaunch()
         viewModel.onLaunch(
             beerItem = beerItem,
             review = review,
@@ -93,46 +93,60 @@ private fun ReviewLoaded(
     onChangeReview: (Int, ReviewSelectValue) -> Unit,
     onAddReview: () -> Unit,
 ) {
+
     Column(
         modifier = Modifier
-            .padding(horizontal = 8.dp)
-            .verticalScroll(rememberScrollState()),
+            .padding(horizontal = 12.dp)
+            .fillMaxSize(),
     ) {
-        ReviewSelectValue.entries.forEach { reviewSelectValue ->
-            ReviewSlider(
-                title = reviewSelectValue.label,
-                description = reviewSelectValue.description,
-                sliderPosition = reviewSelectValue.toSelectValue(review),
-                valueRanges = reviewSelectValue.values,
-                onValueChange = {
-                    onChangeReview(it, reviewSelectValue)
-                },
-            )
+        Box(
+            modifier = Modifier
+                .weight(0.9f),
+        ) {
+            LazyColumn {
+                items(ReviewSelectValue.entries) { reviewSelectValue ->
+                    ReviewSegmentedButton(
+                        title = reviewSelectValue.label,
+                        description = reviewSelectValue.description,
+                        sliderPosition = reviewSelectValue.toSelectValue(review),
+                        valueRanges = reviewSelectValue.values,
+                        onValueChange = {
+                            onChangeReview(it, reviewSelectValue)
+                        },
+                    )
+                }
+            }
         }
 
-        Button(
-            onClick = onAddReview,
-            contentPadding = PaddingValues(
-                start = 20.dp,
-                top = 12.dp,
-                end = 20.dp,
-                bottom = 12.dp
-            )
+
+        Box(
+            modifier = Modifier
+                .weight(0.1f),
         ) {
-            Icon(
-                Icons.Filled.Edit,
-                contentDescription = "edit",
-                modifier = Modifier.size(ButtonDefaults.IconSize),
-            )
-            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-            Text("edit")
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                onClick = onAddReview,
+                contentPadding = PaddingValues(
+                    start = 20.dp,
+                    top = 12.dp,
+                    end = 20.dp,
+                    bottom = 12.dp
+                )
+            ) {
+                Text(
+                    "Review!",
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ReviewSlider(
+private fun ReviewSegmentedButton(
     title: String,
     description: String,
     sliderPosition: Float,
