@@ -137,9 +137,18 @@ fun LoadedScreen(
         floatingActionButton = {
             if (isEnableFab) {
                 ExtendedFloatingActionButton(
-                    onClick = { navController.navigate(BeerRoute.Review.destination) },
-                    icon = { Icon(Icons.Filled.Edit, "Extended floating action button.") },
-                    text = { Text(text = "Extended FAB") },
+                    onClick = {
+                        navController.navigate(BeerRoute.Review.destination)
+                    },
+                    icon = {
+                        Icon(
+                            Icons.Filled.Edit,
+                            contentDescription = null,
+                        )
+                    },
+                    text = {
+                        Text(text = "Review")
+                    },
                 )
             }
         }
@@ -162,7 +171,7 @@ fun LoadedScreen(
                     review = uiState.review,
                     onLaunch = {
                         isEnableFab = false
-                    }
+                    },
                 )
             }
         }
