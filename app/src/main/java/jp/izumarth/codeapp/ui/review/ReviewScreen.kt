@@ -5,30 +5,28 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -41,6 +39,7 @@ import jp.izumarth.codeapp.model.Beer
 import jp.izumarth.codeapp.model.Review
 import jp.izumarth.codeapp.model.ReviewSelectValue
 import jp.izumarth.codeapp.ui.widgets.InfoDialog
+import jp.izumarth.codeapp.ui.widgets.LargeDropdownMenu
 
 @Composable
 fun ReviewScreen(
@@ -105,7 +104,7 @@ private fun ReviewLoaded(
         ) {
             LazyColumn {
                 items(ReviewSelectValue.entries) { reviewSelectValue ->
-                    ReviewSegmentedButton(
+                    ReviewDropDownMenu(
                         title = reviewSelectValue.label,
                         description = reviewSelectValue.description,
                         sliderPosition = reviewSelectValue.toSelectValue(review),
@@ -144,9 +143,8 @@ private fun ReviewLoaded(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ReviewSegmentedButton(
+private fun ReviewDropDownMenu(
     title: String,
     description: String,
     sliderPosition: Float,
@@ -156,10 +154,12 @@ private fun ReviewSegmentedButton(
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Row (
+        Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
+                modifier = Modifier
+                    .weight(0.5f),
                 text = title,
                 style = MaterialTheme.typography.titleSmall,
                 textAlign = TextAlign.Center,
@@ -168,13 +168,20 @@ private fun ReviewSegmentedButton(
             DescriptionDialogue(
                 description = description,
             )
-        }
 
-        ReviewSegmentedButton(
-            options = valueRanges,
-            value = sliderPosition.toInt(),
-            onClick = onValueChange,
-        )
+            var selectedIndex by remember { mutableIntStateOf(sliderPosition.toInt()) }
+            LargeDropdownMenu(
+                modifier = Modifier
+                    .weight(1f),
+                label = title,
+                items = valueRanges,
+                selectedIndex = selectedIndex,
+                onItemSelected = { index, _ ->
+                    selectedIndex = index
+                    onValueChange(index)
+                },
+            )
+        }
     }
 }
 
@@ -184,10 +191,11 @@ private fun DescriptionDialogue(
 ) {
     val openDialog = remember { mutableStateOf(false) }
 
-    IconButton(onClick =  { openDialog.value = true }) {
+    IconButton(onClick = { openDialog.value = true }) {
         Icon(
             imageVector = Icons.Filled.Info,
             contentDescription = null,
+            modifier = Modifier.size(16.dp),
             tint = MaterialTheme.colorScheme.secondary,
         )
     }
@@ -197,46 +205,6 @@ private fun DescriptionDialogue(
             desc = description,
             onDismiss = { openDialog.value = false }
         )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ReviewSegmentedButton(
-    options: List<String>,
-    value: Int,
-    onClick: (Int) -> Unit,
-) {
-    SingleChoiceSegmentedButtonRow(
-        modifier = Modifier
-            .padding(horizontal = 8.dp)
-            .height(32.dp)
-            .fillMaxWidth(),
-    ) {
-        options.forEachIndexed { index, label ->
-            SegmentedButton(
-                modifier = Modifier
-                    .fillMaxHeight(),
-                colors = SegmentedButtonDefaults.colors().copy(
-                    activeContainerColor = MaterialTheme.colorScheme.secondary,
-                    activeContentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
-                shape = SegmentedButtonDefaults.itemShape(
-                    index = index,
-                    count = options.size,
-                    baseShape = RoundedCornerShape(6.dp),
-                ),
-                onClick = { onClick(index) },
-                selected = index == value
-            ) {
-                Text(
-                    text = label,
-                    modifier = Modifier
-                        .fillMaxHeight(),
-                )
-            }
-        }
-
     }
 }
 
